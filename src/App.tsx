@@ -10,6 +10,7 @@ import {
   HStack,
   IconButton,
   Kbd,
+  keyframes,
   Radio,
   RadioGroup,
   SimpleGrid,
@@ -18,6 +19,7 @@ import {
   Stack,
   StackDivider,
   Text,
+  useColorMode,
   VStack,
 } from "@chakra-ui/react";
 import { useCalls, useEthers } from "@usedapp/core";
@@ -36,6 +38,7 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
+import { motion } from "framer-motion";
 import { GiCoinflip, GiHighKick, GiRock } from "react-icons/gi";
 import { RiCoinFill, RiCoinLine } from "react-icons/ri";
 import words from "./utils/words.json";
@@ -48,6 +51,14 @@ import parseChain from "./utils/parseChain";
 import Games from "./components/Games";
 import Game from "./components/Game";
 
+const animationKeyframes = keyframes`
+  0% { transform: scale(1) }
+  50% { transform: scale(1.2) }
+  100% { transform: scale(1) }
+`;
+
+const animation = `${animationKeyframes} 2s ease-in-out infinite`;
+
 function CustomLink({ children, to, ...props }: LinkProps) {
   let resolved = useResolvedPath(to);
   let match = useMatch({ path: resolved.pathname, end: true });
@@ -55,7 +66,9 @@ function CustomLink({ children, to, ...props }: LinkProps) {
   return (
     <span>
       <Link
-        style={{ textDecoration: match ? "overline" : "none" }}
+        style={{
+          textDecoration: match ? "overline" : "none",
+        }}
         to={to}
         {...props}
       >
@@ -78,27 +91,27 @@ const Select = () => {
             p="10"
             m="5"
           />
-        </CustomLink>{" "}
-        {/* <CustomLink to={`RockPaperScissors/${roomUrl ?? "1MATIC"}`}> */}
-        <IconButton
-          aria-label="Rock Paper Scissors"
-          icon={<GiRock />}
-          fontSize="6xl"
-          p="10"
-          m="5"
-          disabled
-        />
-        {/* </CustomLink>{" "} */}
-        {/* <CustomLink to={`AttackAndDefense/${roomUrl ?? "1MATIC"}`}> */}
-        <IconButton
-          aria-label="Attack And Defense"
-          icon={<GiHighKick />}
-          fontSize="6xl"
-          p="10"
-          m="5"
-          disabled
-        />
-        {/* </CustomLink> */}
+        </CustomLink>
+        <CustomLink to={`RockPaperScissors/${roomUrl ?? "1MATIC"}`}>
+          <IconButton
+            aria-label="Rock Paper Scissors"
+            icon={<GiRock />}
+            fontSize="6xl"
+            p="10"
+            m="5"
+            disabled
+          />
+        </CustomLink>
+        <CustomLink to={`AttackAndDefense/${roomUrl ?? "1MATIC"}`}>
+          <IconButton
+            aria-label="Attack And Defense"
+            icon={<GiHighKick />}
+            fontSize="6xl"
+            p="10"
+            m="5"
+            disabled
+          />
+        </CustomLink>
       </HStack>
       <HStack spacing={4} align="center">
         <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/1MATIC`}>
@@ -135,7 +148,7 @@ const Room = () => {
   >([]);
 
   useEffect(() => {
-    if (nameUrl && roomUrl) setQuery(games(nameId, roomId, 10));
+    if (nameUrl && roomUrl) setQuery(games(nameId, roomId, 10, 0, true));
   }, [nameUrl, roomUrl]);
 
   const rawGames: any[] = parseGames(useCalls(query) ?? []);
@@ -147,9 +160,11 @@ const Room = () => {
       {!(pathname.indexOf("/move") + 1) && !idUrl && (
         <VStack spacing={4} align="center">
           <CustomLink to="move">
-            <Button>NEW GAME</Button>
+            <Button m="5">NEW GAME</Button>
           </CustomLink>
-          {rawGames && rawGames.length && <Games games={rawGames}></Games>}
+          <SimpleGrid columns={2} spacing={10}>
+            {rawGames && !!rawGames.length && <Games games={rawGames}></Games>}
+          </SimpleGrid>
         </VStack>
       )}
     </VStack>
@@ -196,6 +211,8 @@ const Move2 = () => {
       if (g.winner !== ethers.constants.AddressZero) {
         if (g.winner === account) {
           setStatus("Yeah! Play againe.");
+        } else if (g.winner === g.player2) {
+          setStatus("Hmmm! Game Over.");
         }
       } else {
         if (g.player2 === ethers.constants.AddressZero) {
@@ -206,7 +223,11 @@ const Move2 = () => {
           } else {
             setStatus("Wait Result");
             if (res.winner === account) {
-              setStatus("You Winner");
+              if (res.sec === "0") {
+                setStatus("You Winner");
+              } else {
+                setStatus("You Winner [ Time To Get " + res.sec + " sec ]");
+              }
             } else {
               setStatus("You Loss");
             }
@@ -217,6 +238,8 @@ const Move2 = () => {
       if (g.winner !== ethers.constants.AddressZero) {
         if (g.winner === account) {
           setStatus("Yeah! Play againe.");
+        } else if (g.winner === g.player1) {
+          setStatus("Hmmm! Game Over.");
         }
       } else {
         if (g.time2 === "0") {
@@ -224,9 +247,9 @@ const Move2 = () => {
         } else {
           setStatus("Wait Result");
           if (res.winner === account) {
-            setStatus("You Winner");
+            setStatus("Opponent Not Confirmed Move, You Winner!");
           } else if (res.sec !== "0") {
-            setStatus("Wait " + res.sec + " sec");
+            setStatus("Wait " + res.sec + " sec [ Player 1 Confirm Move ]");
           }
         }
       }
@@ -271,44 +294,86 @@ const Move2 = () => {
   const [clickHeads, setClickHeads] = useState(false);
   const [clickTails, setClickTails] = useState(false);
 
+  const { pathname } = useLocation();
+
   return (
     <VStack spacing={4}>
-      {g && g.player1 && g.player1 !== account && (
-        <Box>
-          <Kbd>YOU</Kbd> vs <Kbd>{g.player1}</Kbd>
+      {g && g.player1 && g.player2 && (
+        <Box m="10">
+          <Kbd>{g.player1.slice(0, 8) + "..." + g.player1.slice(-4)}</Kbd> vs{" "}
+          <Kbd>{g.player2.slice(0, 8) + "..." + g.player2.slice(-4)}</Kbd>
         </Box>
       )}
       {status ? (
-        <Box m="10">
-          <Kbd>{status}</Kbd>
-          {status === "You Winner" && (
-            <Button onClick={handleRequestClaim}>Claim Prize</Button>
+        <Box m="10" textAlign="center">
+          <Kbd fontSize="2xl">{status}</Kbd>
+          {!!(status.indexOf("Winner") + 1) ? (
+            <Box m="5">
+              <Button onClick={handleRequestClaim}>Claim Prize</Button>
+            </Box>
+          ) : (
+            <Box>
+              {!!(status.indexOf("Wait 2 player") + 1) ? (
+                <Box m="5">
+                  <Text fontSize="sm" mr="2">
+                    Send your friend:
+                  </Text>
+                  <Kbd fontSize="sm">{`https://2players.app${pathname}`}</Kbd>
+                </Box>
+              ) : (
+                ""
+              )}
+            </Box>
           )}
         </Box>
       ) : (
-        <Box my="5">
-          <IconButton
-            aria-label="Heads"
-            icon={clickHeads ? <Spinner size="xl" /> : <RiCoinFill />}
-            fontSize="6xl"
-            p="10"
-            m="5"
-            onClick={() => {
-              setClickHeads(true);
-              handleRequestMove("1");
-            }}
-          />
-          <IconButton
-            aria-label="Tails"
-            icon={clickTails ? <Spinner size="xl" /> : <RiCoinLine />}
-            fontSize="6xl"
-            p="10"
-            m="5"
-            onClick={() => {
-              setClickTails(true);
-              handleRequestMove("2");
-            }}
-          />
+        <Box>
+          {g &&
+          g.winner &&
+          g.winner !== "0x0000000000000000000000000000000000000000" &&
+          (g.winner === g.player1 || g.winner === g.player2) ? (
+            <Box m="5">
+              <Kbd m="2">WINNER:</Kbd>
+              {g.winner === g.player1 && (
+                <Kbd>{g.player1.slice(0, 8) + "..." + g.player1.slice(-4)}</Kbd>
+              )}
+              {g.winner === g.player2 && (
+                <Kbd>{g.player2.slice(0, 8) + "..." + g.player2.slice(-4)}</Kbd>
+              )}
+            </Box>
+          ) : (
+            g &&
+            g.winner && (
+              <Box my="5">
+                <IconButton
+                  as={motion.button}
+                  animation={animation}
+                  aria-label="Heads"
+                  icon={clickHeads ? <Spinner size="xl" /> : <RiCoinFill />}
+                  fontSize="6xl"
+                  p="10"
+                  m="5"
+                  onClick={() => {
+                    setClickHeads(true);
+                    handleRequestMove("1");
+                  }}
+                />
+                <IconButton
+                  as={motion.button}
+                  animation={animation}
+                  aria-label="Tails"
+                  icon={clickTails ? <Spinner size="xl" /> : <RiCoinLine />}
+                  fontSize="6xl"
+                  p="10"
+                  m="5"
+                  onClick={() => {
+                    setClickTails(true);
+                    handleRequestMove("2");
+                  }}
+                />
+              </Box>
+            )
+          )}
         </Box>
       )}
     </VStack>
@@ -321,6 +386,7 @@ const Move1 = () => {
   const [secret, setSecret] = useState({ phrase: "", proof: "", cipher: "" });
 
   const nameId = parseChain.name(nameUrl);
+  const roomId = parseChain.room(roomUrl);
 
   const { send: _move, state: _stateMove } = write("move1");
 
@@ -334,25 +400,37 @@ const Move1 = () => {
         words[Math.floor(Math.random() * words.length)];
       const proof = solidityKeccak256(["string"], [phrase]);
       const cipher = solidityKeccak256(["uint256", "bytes32"], [move, proof]);
-      setSecret({ phrase, proof, cipher });
 
       const m: any = await _move(nameId, cipher, {
         value: parseChain.value(roomUrl),
       });
-      const name = m.events[0].args.name.toString();
-      const room = m.events[0].args.room.toString();
-      const id = m.events[0].args.id.toString();
+      let id;
+      if (m && m.events && m.events[0] && m.events[0].args) {
+        id = m.events[0].args.id.toString();
+      } else {
+        id = m.events[1].args.id.toString();
+      }
       localStorage.setItem(
-        "game" + name + room + id,
-        JSON.stringify({ name, room, id, move, ...secret }, null, 2)
+        "game" + nameId + roomId + id,
+        JSON.stringify({
+          name: nameId,
+          room: roomId,
+          id,
+          move,
+          phrase,
+          proof,
+          cipher,
+        })
       );
       setClickHeads(false);
       setClickTails(false);
+      setSecret({ phrase, proof, cipher });
       navigate(`../${id}`, { replace: true });
     } catch (e) {
       console.log("handleRequestMove", e);
       setClickHeads(false);
       setClickTails(false);
+      setSecret({ phrase: "", proof: "", cipher: "" });
     }
   };
 
@@ -363,6 +441,8 @@ const Move1 = () => {
     <VStack spacing={4}>
       <Box my="5">
         <IconButton
+          as={motion.button}
+          animation={animation}
           aria-label="Heads"
           icon={clickHeads ? <Spinner size="xl" /> : <RiCoinFill />}
           fontSize="6xl"
@@ -374,6 +454,8 @@ const Move1 = () => {
           }}
         />
         <IconButton
+          as={motion.button}
+          animation={animation}
           aria-label="Tails"
           icon={clickTails ? <Spinner size="xl" /> : <RiCoinLine />}
           fontSize="6xl"
@@ -387,7 +469,7 @@ const Move1 = () => {
       </Box>
       {secret.phrase && (
         <Box>
-          <Kbd mr="2">Secret worlds:</Kbd>
+          <Kbd mr="2">Game Passphrase:</Kbd>
           {secret.phrase.split(" ").map((k, i) => (
             <Kbd key={i} mx="1">
               {k}
@@ -401,48 +483,89 @@ const Move1 = () => {
 
 function App() {
   const { account, activateBrowserWallet } = useEthers();
+  const [app, setApp] = useState(false);
+  const { colorMode, toggleColorMode } = useColorMode();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (colorMode === "light") {
+      toggleColorMode();
+    }
+  }, []);
 
   return (
     <VStack spacing={10} align="stretch" p={2}>
-      <Flex minWidth="max-content" alignItems="center" gap="2">
-        <Box p="2">
-          <Heading size="md">2Players.App</Heading>
+      {(app || pathname !== "/") && (
+        <Box>
+          <Flex minWidth="max-content" alignItems="center" gap="2">
+            <Box p="3">
+              <Heading size="md" color="white">
+                <Link to="/">2Players.App</Link>
+              </Heading>
+            </Box>
+            <Spacer />
+            <Box p="3">
+              {account && (
+                <Text color="white">
+                  {account.slice(0, 4) + "..." + account.slice(-2)}
+                </Text>
+              )}
+              {!account && (
+                <Button
+                  colorScheme="gray"
+                  onClick={() => {
+                    activateBrowserWallet();
+                  }}
+                >
+                  Connect
+                </Button>
+              )}
+            </Box>
+          </Flex>
+          <VStack
+            divider={<StackDivider borderColor="gray.200" />}
+            spacing={4}
+            align="stretch"
+          >
+            <Routes>
+              <Route path="/" element={<Select></Select>}>
+                <Route path=":nameUrl/:roomUrl" element={<Room></Room>}>
+                  <Route path="move" element={<Move1></Move1>} />
+                  <Route path=":idUrl" element={<Move2></Move2>} />
+                </Route>
+              </Route>
+            </Routes>
+          </VStack>
         </Box>
-        <Spacer />
-        <ButtonGroup gap="2">
-          {account && (
-            <Text>
-              {account[0] + account[1] + account[2] + account[3]}
-              ...
-              {account[account.length - 2] + account[account.length - 1]}
-            </Text>
-          )}
-          {!account && (
-            <Button
-              colorScheme="teal"
-              onClick={() => {
-                activateBrowserWallet();
-              }}
-            >
-              Connect
-            </Button>
-          )}
-        </ButtonGroup>
-      </Flex>
-      <VStack
-        divider={<StackDivider borderColor="gray.200" />}
-        spacing={4}
-        align="stretch"
-      >
-        <Routes>
-          <Route path="/" element={<Select></Select>}>
-            <Route path=":nameUrl/:roomUrl" element={<Room></Room>}>
-              <Route path="move" element={<Move1></Move1>} />
-              <Route path=":idUrl" element={<Move2></Move2>} />
-            </Route>
-          </Route>
-        </Routes>
-      </VStack>
+      )}
+      {!app && pathname === "/" && (
+        <VStack
+          verticalAlign="center"
+          textAlign="center"
+          width="100%"
+          height="100%"
+          m="0"
+          p="0"
+          left="0"
+          top="0"
+          position="absolute"
+          className="debug-blue"
+        >
+          <Spacer></Spacer>
+          <Heading>2Players.App</Heading>
+          <Text>WEB3 Platform For Build Decentralized Games</Text>
+          <Button
+            m="10"
+            p="5"
+            onClick={() => {
+              setApp(true);
+            }}
+          >
+            Launch App
+          </Button>
+          <Spacer></Spacer>
+        </VStack>
+      )}
     </VStack>
   );
 }
