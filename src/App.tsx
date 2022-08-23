@@ -1,13 +1,24 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Center,
   Container,
   Divider,
+  Flex,
+  Heading,
+  HStack,
+  IconButton,
+  Kbd,
   Radio,
   RadioGroup,
+  SimpleGrid,
+  Spacer,
+  Spinner,
   Stack,
+  StackDivider,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { useCalls, useEthers } from "@usedapp/core";
 import { Contract, ethers } from "ethers";
@@ -23,7 +34,10 @@ import {
   useMatch,
   Link,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
+import { GiCoinflip, GiHighKick, GiRock } from "react-icons/gi";
+import { RiCoinFill, RiCoinLine } from "react-icons/ri";
 import words from "./utils/words.json";
 import { write, game, games, winner } from "./queries";
 import parseGame from "./utils/parseGame";
@@ -45,7 +59,7 @@ function CustomLink({ children, to, ...props }: LinkProps) {
         to={to}
         {...props}
       >
-        <Button>{children}</Button>
+        {children}
       </Link>
     </span>
   );
@@ -54,47 +68,60 @@ function CustomLink({ children, to, ...props }: LinkProps) {
 const Select = () => {
   const { nameUrl, roomUrl } = useParams();
   return (
-    <Box>
-      <CustomLink to={`HeadsOrTails/${roomUrl ?? "1MATIC"}`}>
-        Heads Or Tails
-      </CustomLink>{" "}
-      |{" "}
-      <CustomLink to={`RockPaperScissors/${roomUrl ?? "1MATIC"}`}>
-        Rock Paper Scissors
-      </CustomLink>{" "}
-      |{" "}
-      <CustomLink to={`AttackAndDefense/${roomUrl ?? "1MATIC"}`}>
-        Attack And Defense
-      </CustomLink>
-      <Divider></Divider>
-      <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/1MATIC`}>
-        1 MATIC
-      </CustomLink>{" "}
-      |{" "}
-      <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/10MATIC`}>
-        10 MATIC
-      </CustomLink>{" "}
-      |{" "}
-      <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/100MATIC`}>
-        100 MATIC
-      </CustomLink>{" "}
-      |{" "}
-      <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/1000MATIC`}>
-        1000 MATIC
-      </CustomLink>
-      <Divider></Divider>
-      <CustomLink
-        to={`${nameUrl ?? "HeadsOrTails"}/${roomUrl ?? "1MATIC"}/move`}
-      >
-        NEW GAME
-      </CustomLink>
+    <VStack>
+      <HStack spacing={4} align="center">
+        <CustomLink to={`HeadsOrTails/${roomUrl ?? "1MATIC"}`}>
+          <IconButton
+            aria-label="Heads Or Tails"
+            icon={<GiCoinflip />}
+            fontSize="6xl"
+            p="10"
+            m="5"
+          />
+        </CustomLink>{" "}
+        {/* <CustomLink to={`RockPaperScissors/${roomUrl ?? "1MATIC"}`}> */}
+        <IconButton
+          aria-label="Rock Paper Scissors"
+          icon={<GiRock />}
+          fontSize="6xl"
+          p="10"
+          m="5"
+          disabled
+        />
+        {/* </CustomLink>{" "} */}
+        {/* <CustomLink to={`AttackAndDefense/${roomUrl ?? "1MATIC"}`}> */}
+        <IconButton
+          aria-label="Attack And Defense"
+          icon={<GiHighKick />}
+          fontSize="6xl"
+          p="10"
+          m="5"
+          disabled
+        />
+        {/* </CustomLink> */}
+      </HStack>
+      <HStack spacing={4} align="center">
+        <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/1MATIC`}>
+          <Button>1 MATIC</Button>
+        </CustomLink>{" "}
+        <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/10MATIC`}>
+          <Button>10 MATIC</Button>
+        </CustomLink>{" "}
+        <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/100MATIC`}>
+          <Button>100 MATIC</Button>
+        </CustomLink>{" "}
+        <CustomLink to={`${nameUrl ?? "HeadsOrTails"}/1000MATIC`}>
+          <Button>1000 MATIC</Button>
+        </CustomLink>
+      </HStack>
       <Outlet></Outlet>
-    </Box>
+    </VStack>
   );
 };
 
 const Room = () => {
-  const { nameUrl, roomUrl } = useParams();
+  const { nameUrl, roomUrl, idUrl = "" } = useParams();
+  const { pathname } = useLocation();
 
   const nameId = parseChain.name(nameUrl);
   const roomId = parseChain.room(roomUrl);
@@ -114,14 +141,18 @@ const Room = () => {
   const rawGames: any[] = parseGames(useCalls(query) ?? []);
 
   return (
-    <Box maxW="container.sm">
-      <Box>
-        <Outlet></Outlet>
-      </Box>
-      <Box>
-        <Games games={rawGames}></Games>
-      </Box>
-    </Box>
+    <VStack spacing={4} align="center">
+      <Outlet></Outlet>
+
+      {!(pathname.indexOf("/move") + 1) && !idUrl && (
+        <VStack spacing={4} align="center">
+          <CustomLink to="move">
+            <Button>NEW GAME</Button>
+          </CustomLink>
+          {rawGames && rawGames.length && <Games games={rawGames}></Games>}
+        </VStack>
+      )}
+    </VStack>
   );
 };
 
@@ -206,11 +237,19 @@ const Move2 = () => {
   const { send: _claim, state: _stateClaim } = write("claim");
   const { send: _stop, state: _stateStop } = write("stop");
 
-  const handleRequestMove2 = async () => {
-    const m: any = await _move2(url.name, url.id, move, {
-      value: parseChain.value(roomUrl),
-    });
-    console.log(m);
+  const handleRequestMove = async (move: string) => {
+    try {
+      const m: any = await _move2(url.name, url.id, move, {
+        value: parseChain.value(roomUrl),
+      });
+      console.log(m);
+      setClickHeads(false);
+      setClickTails(false);
+    } catch (e) {
+      console.log("handleRequestMove", e);
+      setClickHeads(false);
+      setClickTails(false);
+    }
   };
 
   const handleRequestClaim = async () => {
@@ -229,65 +268,75 @@ const Move2 = () => {
     console.log(m);
   };
 
+  const [clickHeads, setClickHeads] = useState(false);
+  const [clickTails, setClickTails] = useState(false);
+
   return (
-    <Box>
-      <Center>
-        <Divider></Divider>
-        {g && g.id && <Game game={g}></Game>}
-        <Divider></Divider>
-        {status ? (
-          <Box>
-            <Text>{status}</Text>
-            {status === "You Winner" && (
-              <Button onClick={handleRequestClaim}>
-                Claim prize You Winner
-              </Button>
-            )}
-          </Box>
-        ) : (
-          <Box>
-            <RadioGroup onChange={setMove} value={move}>
-              <Stack direction="row">
-                <Radio value="1">Heads</Radio>
-                <Radio value="2">Tails</Radio>
-              </Stack>
-            </RadioGroup>
-            <Divider></Divider>
-            <Button onClick={handleRequestMove2}>SEND 2</Button>
-          </Box>
-        )}
-        <Divider></Divider>
-      </Center>
-      <Outlet></Outlet>
-    </Box>
+    <VStack spacing={4}>
+      {g && g.player1 && g.player1 !== account && (
+        <Box>
+          <Kbd>YOU</Kbd> vs <Kbd>{g.player1}</Kbd>
+        </Box>
+      )}
+      {status ? (
+        <Box m="10">
+          <Kbd>{status}</Kbd>
+          {status === "You Winner" && (
+            <Button onClick={handleRequestClaim}>Claim Prize</Button>
+          )}
+        </Box>
+      ) : (
+        <Box my="5">
+          <IconButton
+            aria-label="Heads"
+            icon={clickHeads ? <Spinner size="xl" /> : <RiCoinFill />}
+            fontSize="6xl"
+            p="10"
+            m="5"
+            onClick={() => {
+              setClickHeads(true);
+              handleRequestMove("1");
+            }}
+          />
+          <IconButton
+            aria-label="Tails"
+            icon={clickTails ? <Spinner size="xl" /> : <RiCoinLine />}
+            fontSize="6xl"
+            p="10"
+            m="5"
+            onClick={() => {
+              setClickTails(true);
+              handleRequestMove("2");
+            }}
+          />
+        </Box>
+      )}
+    </VStack>
   );
 };
 
 const Move1 = () => {
   const { nameUrl, roomUrl } = useParams();
   const navigate = useNavigate();
-  const [move, setMove] = useState("1");
   const [secret, setSecret] = useState({ phrase: "", proof: "", cipher: "" });
-
-  useEffect(() => {
-    const phrase =
-      words[Math.floor(Math.random() * words.length)] +
-      " " +
-      words[Math.floor(Math.random() * words.length)] +
-      " " +
-      words[Math.floor(Math.random() * words.length)];
-    const proof = solidityKeccak256(["string"], [phrase]);
-    const cipher = solidityKeccak256(["uint256", "bytes32"], [move, proof]);
-    setSecret({ phrase, proof, cipher });
-  }, [move]);
 
   const nameId = parseChain.name(nameUrl);
 
   const { send: _move, state: _stateMove } = write("move1");
 
-  const handleRequestMove = async () => {
+  const handleRequestMove = async (move: string) => {
     try {
-      const m: any = await _move(nameId, secret.cipher, {
+      const phrase =
+        words[Math.floor(Math.random() * words.length)] +
+        " " +
+        words[Math.floor(Math.random() * words.length)] +
+        " " +
+        words[Math.floor(Math.random() * words.length)];
+      const proof = solidityKeccak256(["string"], [phrase]);
+      const cipher = solidityKeccak256(["uint256", "bytes32"], [move, proof]);
+      setSecret({ phrase, proof, cipher });
+
+      const m: any = await _move(nameId, cipher, {
         value: parseChain.value(roomUrl),
       });
       const name = m.events[0].args.name.toString();
@@ -297,28 +346,56 @@ const Move1 = () => {
         "game" + name + room + id,
         JSON.stringify({ name, room, id, move, ...secret }, null, 2)
       );
+      setClickHeads(false);
+      setClickTails(false);
       navigate(`../${id}`, { replace: true });
     } catch (e) {
       console.log("handleRequestMove", e);
+      setClickHeads(false);
+      setClickTails(false);
     }
   };
 
+  const [clickHeads, setClickHeads] = useState(false);
+  const [clickTails, setClickTails] = useState(false);
+
   return (
-    <Box>
-      <Divider></Divider>
-      <RadioGroup onChange={setMove} value={move}>
-        <Stack direction="row">
-          <Radio value="1">Heads</Radio>
-          <Radio value="2">Tails</Radio>
-        </Stack>
-      </RadioGroup>
-      <Divider></Divider>
-      <Button onClick={handleRequestMove}>
-        SEND 1 (SECRET: {secret.phrase})
-      </Button>
-      <Divider></Divider>
-      <Outlet></Outlet>
-    </Box>
+    <VStack spacing={4}>
+      <Box my="5">
+        <IconButton
+          aria-label="Heads"
+          icon={clickHeads ? <Spinner size="xl" /> : <RiCoinFill />}
+          fontSize="6xl"
+          p="10"
+          m="5"
+          onClick={() => {
+            setClickHeads(true);
+            handleRequestMove("1");
+          }}
+        />
+        <IconButton
+          aria-label="Tails"
+          icon={clickTails ? <Spinner size="xl" /> : <RiCoinLine />}
+          fontSize="6xl"
+          p="10"
+          m="5"
+          onClick={() => {
+            setClickTails(true);
+            handleRequestMove("2");
+          }}
+        />
+      </Box>
+      {secret.phrase && (
+        <Box>
+          <Kbd mr="2">Secret worlds:</Kbd>
+          {secret.phrase.split(" ").map((k, i) => (
+            <Kbd key={i} mx="1">
+              {k}
+            </Kbd>
+          ))}
+        </Box>
+      )}
+    </VStack>
   );
 };
 
@@ -326,17 +403,37 @@ function App() {
   const { account, activateBrowserWallet } = useEthers();
 
   return (
-    <Box>
-      <Text>{account}</Text>
-      <Box
-        as="button"
-        onClick={() => {
-          activateBrowserWallet();
-        }}
+    <VStack spacing={10} align="stretch" p={2}>
+      <Flex minWidth="max-content" alignItems="center" gap="2">
+        <Box p="2">
+          <Heading size="md">2Players.App</Heading>
+        </Box>
+        <Spacer />
+        <ButtonGroup gap="2">
+          {account && (
+            <Text>
+              {account[0] + account[1] + account[2] + account[3]}
+              ...
+              {account[account.length - 2] + account[account.length - 1]}
+            </Text>
+          )}
+          {!account && (
+            <Button
+              colorScheme="teal"
+              onClick={() => {
+                activateBrowserWallet();
+              }}
+            >
+              Connect
+            </Button>
+          )}
+        </ButtonGroup>
+      </Flex>
+      <VStack
+        divider={<StackDivider borderColor="gray.200" />}
+        spacing={4}
+        align="stretch"
       >
-        Activate
-      </Box>
-      <Box>
         <Routes>
           <Route path="/" element={<Select></Select>}>
             <Route path=":nameUrl/:roomUrl" element={<Room></Room>}>
@@ -345,8 +442,8 @@ function App() {
             </Route>
           </Route>
         </Routes>
-      </Box>
-    </Box>
+      </VStack>
+    </VStack>
   );
 }
 

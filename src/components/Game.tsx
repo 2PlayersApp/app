@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 const Game = ({ game }: { game: any }) => {
   return (
-    <Box>
+    <Box bg="tomato">
       {game && (
-        <LinkBox as="article" maxW="sm" p="5" borderWidth="1px" rounded="md">
+        <Box>
           <Box>
             {game.time1 && new Date(parseInt(game.time1) * 1000).toISOString()}
           </Box>
@@ -14,7 +14,7 @@ const Game = ({ game }: { game: any }) => {
           </Heading>
           <Text>Player1: {game.player1}</Text>
           <Text>Player2: {game.player2}</Text>
-        </LinkBox>
+        </Box>
       )}
     </Box>
   );

@@ -1,20 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import { Config, DAppProvider, Localhost, Goerli } from "@usedapp/core";
+import { Config, DAppProvider, Goerli } from "@usedapp/core";
 import { BrowserRouter } from "react-router-dom";
 import { MULTICALL } from "./constants";
 import App from "./App";
 
-const colors = {
-  brand: {
-    900: "#1a365d",
-    800: "#153e75",
-    700: "#2a69ac",
-  },
+const configChakra = {
+  useSystemColorMode: false,
+  initialColorMode: "dark",
 };
 
-const theme = extendTheme({ colors });
+const theme = extendTheme(configChakra);
 
 const config: Config = {
   readOnlyChainId: Goerli.chainId,
