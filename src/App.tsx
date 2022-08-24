@@ -84,7 +84,7 @@ const Select = () => {
             m="5"
           />
         </CustomLink>
-        <CustomLink to={`RockPaperScissors/${roomUrl ?? "1MATIC"}`}>
+        <CustomLink to={`HeadsOrTails/${roomUrl ?? "1MATIC"}`}>
           <IconButton
             aria-label="Rock Paper Scissors"
             icon={<GiRock />}
@@ -94,7 +94,7 @@ const Select = () => {
             disabled
           />
         </CustomLink>
-        <CustomLink to={`AttackAndDefense/${roomUrl ?? "1MATIC"}`}>
+        <CustomLink to={`HeadsOrTails/${roomUrl ?? "1MATIC"}`}>
           <IconButton
             aria-label="Attack And Defense"
             icon={<GiHighKick />}
