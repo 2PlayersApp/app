@@ -17,6 +17,9 @@ const theme = extendTheme({
   },
   styles: {
     global: {
+      body: {
+        bg: "black",
+      },
       "html,body": {
         height: "100%",
         width: "100%",
@@ -24,7 +27,7 @@ const theme = extendTheme({
       ".bg": {
         margin: 0,
         padding: 0,
-        position: "absolute",
+        position: "fixed",
         left: 0,
         top: 0,
         width: "100%",

@@ -1,22 +1,15 @@
 import {
   Box,
   Button,
-  ButtonGroup,
-  Center,
-  Container,
-  Divider,
   Flex,
   Heading,
   HStack,
   IconButton,
   Kbd,
   keyframes,
-  Radio,
-  RadioGroup,
   SimpleGrid,
   Spacer,
   Spinner,
-  Stack,
   StackDivider,
   Text,
   useColorMode,
@@ -49,7 +42,6 @@ import parseWinner from "./utils/parseWinner";
 import parseChain from "./utils/parseChain";
 
 import Games from "./components/Games";
-import Game from "./components/Game";
 
 const animationKeyframes = keyframes`
   0% { transform: scale(1) }
