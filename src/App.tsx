@@ -493,6 +493,10 @@ function App() {
             <Box p="3">
               <Heading size="md" color="white">
                 <Link to="/">2Players.App</Link>
+                <Text as="small" fontSize="xs">
+                  {" "}
+                  [ mumbai testnet ]
+                </Text>
               </Heading>
             </Box>
             <Spacer />
