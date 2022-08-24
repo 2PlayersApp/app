@@ -15,7 +15,7 @@ import {
   useColorMode,
   VStack,
 } from "@chakra-ui/react";
-import { useCalls, useEthers } from "@usedapp/core";
+import { Mumbai, useCalls, useEthers } from "@usedapp/core";
 import { Contract, ethers } from "ethers";
 import { solidityKeccak256 } from "ethers/lib/utils";
 import { useEffect, useState } from "react";
@@ -474,7 +474,8 @@ const Move1 = () => {
 };
 
 function App() {
-  const { account, activateBrowserWallet } = useEthers();
+  const { account, activateBrowserWallet, switchNetwork, chainId } =
+    useEthers();
   const [app, setApp] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const { pathname } = useLocation();
@@ -509,8 +510,13 @@ function App() {
               {!account && (
                 <Button
                   colorScheme="gray"
-                  onClick={() => {
-                    activateBrowserWallet();
+                  onClick={async () => {
+                    if (chainId !== Mumbai.chainId) {
+                      await switchNetwork(Mumbai.chainId);
+                      activateBrowserWallet();
+                    } else {
+                      activateBrowserWallet();
+                    }
                   }}
                 >
                   Connect
