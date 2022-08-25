@@ -26,7 +26,7 @@ const CardTime = ({ game }: { game: IGame }) => {
 
 const CardHead = ({ game, status }: { game: IGame; status?: string }) => {
   const { account } = useEthers();
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(<></>);
   const [color, setColor] = useState("");
   const { room } = useParams();
 
@@ -34,40 +34,35 @@ const CardHead = ({ game, status }: { game: IGame; status?: string }) => {
     if (!game) return;
     if (game.winner === ethers.constants.AddressZero) {
       if (game.player1 === account) {
-        setTitle("WAIT OPPONENT");
+        setTitle(<Text color="yellow.500">WAIT OPPONENT</Text>);
         setColor("yellow.500");
       } else {
-        setTitle("PLAY GAME");
-        setColor("blue.500");
+        setTitle(<Text color="blue.500">PLAY GAME</Text>);
       }
     } else {
       if (game.player1 === game.winner) {
         if (game.player1 === account) {
-          setTitle("YOU WIN " + room);
-          setColor("green.500");
+          setTitle(<Text color="green.500">{`YOU WIN ${room}`}</Text>);
         } else if (game.player2 === account) {
-          setTitle("YOU LOSE " + room);
-          setColor("red.500");
+          setTitle(<Text color="red.500">{`YOU LOSE ${room}`}</Text>);
         } else {
-          setTitle("PLAYER 1 WIN" + room);
+          setTitle(<Text>{`PLAYER 1 WIN ${room}`}</Text>);
         }
       } else {
         if (game.player2 === account) {
-          setTitle("YOU WIN " + room);
-          setColor("green.500");
+          setTitle(<Text color="green.500">{`YOU WIN ${room}`}</Text>);
         } else if (game.player1 === account) {
-          setTitle("YOU LOSE " + room);
-          setColor("red.500");
+          setTitle(<Text color="red.500">{`YOU LOSE ${room}`}</Text>);
         } else {
-          setTitle("PLAYER 2 WIN " + room);
+          setTitle(<Text>{`PLAYER 2 WIN ${room}`}</Text>);
         }
       }
     }
   }, [game]);
 
   return (
-    <Heading size="md" my="3">
-      <Text color={color}>{status || title}</Text>
+    <Heading size="md" my="3" fontSize={15}>
+      {status ? <Text color={color}>{status}</Text> : <Box>{title}</Box>}
     </Heading>
   );
 };
@@ -153,7 +148,11 @@ const Move = ({ move, player }: { move: string; player?: boolean }) => {
   }
   return (
     <HStack>
-      {move === "0" ? <Box>NOT CONFIRMED</Box> : moveJsx.map((m) => m)}
+      {move === "0" ? (
+        <Box>NOT CONFIRMED</Box>
+      ) : (
+        moveJsx.map((m, i) => <Box key={i}>{m}</Box>)
+      )}
     </HStack>
   );
 };
@@ -270,7 +269,7 @@ const Game = ({ game, status }: { game: IGame; status?: string }) => {
   return (
     <Box>
       {game && (
-        <Link to={status ? "#" : game.id}>
+        <Link to={typeof status === "string" ? "#" : game.id}>
           <Box
             border={1}
             borderColor="gray.100"
@@ -280,11 +279,7 @@ const Game = ({ game, status }: { game: IGame; status?: string }) => {
             p="5"
           >
             <CardTime game={game}></CardTime>
-            {typeof status === "string" && !status ? (
-              <></>
-            ) : (
-              <CardHead game={game} status={status}></CardHead>
-            )}
+            <CardHead game={game} status={status}></CardHead>
             <CardPlayer game={game} player={game.player1} id={1}></CardPlayer>
             <CardPlayer game={game} player={game.player2} id={2}></CardPlayer>
             {typeof status === "string" && <CardFull game={game}></CardFull>}
