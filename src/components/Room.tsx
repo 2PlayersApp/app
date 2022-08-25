@@ -1,4 +1,11 @@
-import { Box, Button, SimpleGrid, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  SimpleGrid,
+  VStack,
+  Text,
+  Spinner,
+} from "@chakra-ui/react";
 import { Call, useCalls } from "@usedapp/core";
 import { useEffect, useState } from "react";
 import { Outlet, useParams, Link, useLocation } from "react-router-dom";
@@ -33,13 +40,18 @@ export default () => {
               <Button size="lg">NEW GAME</Button>
             </Link>
           </Box>
-          <SimpleGrid columns={{ sm: 2, lg: 3 }} spacing={5}>
-            {gamesList &&
-              !!gamesList.length &&
-              gamesList.map((game: any) => (
+          {gamesList && !!gamesList.length ? (
+            <SimpleGrid columns={{ sm: 2, lg: 3 }} spacing={5}>
+              {gamesList.map((game: any) => (
                 <Game key={game.id} game={game}></Game>
               ))}
-          </SimpleGrid>
+            </SimpleGrid>
+          ) : (
+            <Box textAlign="center">
+              <Spinner />
+              <Text>Loading...</Text>
+            </Box>
+          )}
         </VStack>
       )}
     </VStack>

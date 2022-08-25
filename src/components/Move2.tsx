@@ -223,12 +223,14 @@ const Move2 = () => {
   };
 
   return (
-    <VStack spacing={5} mt="5">
-      {gameItem && gameItem.move1 !== ethers.constants.AddressZero && (
-        <Box>
-          <Game game={gameItem} status={status}></Game>
-        </Box>
-      )}
+    <VStack>
+      {gameItem &&
+        gameItem.player1 &&
+        gameItem.player1 !== ethers.constants.AddressZero && (
+          <Box>
+            <Game game={gameItem} status={status}></Game>
+          </Box>
+        )}
       {gameItem &&
         witterItem &&
         witterItem.winner !== ethers.constants.AddressZero &&
@@ -252,275 +254,285 @@ const Move2 = () => {
             fontSize="sm"
             p="7"
             pb="1"
-          >{`https://2players.app${pathname}`}</Kbd>
+          >{`https://2players.app/#${pathname}`}</Kbd>
         </Box>
       ) : (
         <Box>
-          <VStack spacing={5}>
-            {name && name === "HeadsOrTails" && (
-              <HStack spacing={5} my="10">
-                <IconButton
-                  as={motion.button}
-                  animation={clickHeads || clickTails ? "none" : animation}
-                  aria-label="Heads"
-                  icon={clickHeads ? <Spinner size="xl" /> : <RiCoinFill />}
-                  fontSize="8xl"
-                  p="10"
-                  onClick={() => {
-                    setClickHeads(true);
-                    handleRequestMove("1");
-                  }}
-                />
-                <IconButton
-                  as={motion.button}
-                  animation={clickHeads || clickTails ? "none" : animation}
-                  aria-label="Tails"
-                  icon={clickTails ? <Spinner size="xl" /> : <RiCoinLine />}
-                  fontSize="8xl"
-                  p="10"
-                  onClick={() => {
-                    setClickTails(true);
-                    handleRequestMove("2");
-                  }}
-                />
-              </HStack>
-            )}
-            {name && name === "RockPaperScissors" && (
-              <HStack spacing={5} my="10">
-                <IconButton
-                  as={motion.button}
-                  animation={
-                    clickRock || clickPaper || clickScissors
-                      ? "none"
-                      : animation
-                  }
-                  aria-label="Rock"
-                  icon={clickRock ? <Spinner size="xl" /> : <FaHandRock />}
-                  fontSize="6xl"
-                  p="10"
-                  onClick={() => {
-                    setClickRock(true);
-                    handleRequestMove("1");
-                  }}
-                />
-                <IconButton
-                  as={motion.button}
-                  animation={
-                    clickRock || clickPaper || clickScissors
-                      ? "none"
-                      : animation
-                  }
-                  aria-label="Paper"
-                  icon={clickPaper ? <Spinner size="xl" /> : <FaHandPaper />}
-                  fontSize="6xl"
-                  p="10"
-                  onClick={() => {
-                    setClickPaper(true);
-                    handleRequestMove("2");
-                  }}
-                />
-                <IconButton
-                  as={motion.button}
-                  animation={
-                    clickRock || clickPaper || clickScissors
-                      ? "none"
-                      : animation
-                  }
-                  aria-label="Scissors"
-                  icon={
-                    clickScissors ? <Spinner size="xl" /> : <FaHandScissors />
-                  }
-                  fontSize="6xl"
-                  p="10"
-                  onClick={() => {
-                    setClickScissors(true);
-                    handleRequestMove("3");
-                  }}
-                />
-              </HStack>
-            )}
-            {name && name === "AttackAndDefense" && (
-              <HStack spacing={5} my="10">
-                <VStack spacing={5}>
-                  <Box>Attack:</Box>
+          {gameItem &&
+          gameItem.player1 &&
+          gameItem.player1 !== ethers.constants.AddressZero &&
+          gameItem.winner === ethers.constants.AddressZero ? (
+            <VStack spacing={5}>
+              {name && name === "HeadsOrTails" && (
+                <HStack spacing={5} my="5">
+                  <IconButton
+                    as={motion.button}
+                    animation={clickHeads || clickTails ? "none" : animation}
+                    aria-label="Heads"
+                    icon={clickHeads ? <Spinner size="xl" /> : <RiCoinFill />}
+                    fontSize="8xl"
+                    p="10"
+                    onClick={() => {
+                      setClickHeads(true);
+                      handleRequestMove("1");
+                    }}
+                  />
+                  <IconButton
+                    as={motion.button}
+                    animation={clickHeads || clickTails ? "none" : animation}
+                    aria-label="Tails"
+                    icon={clickTails ? <Spinner size="xl" /> : <RiCoinLine />}
+                    fontSize="8xl"
+                    p="10"
+                    onClick={() => {
+                      setClickTails(true);
+                      handleRequestMove("2");
+                    }}
+                  />
+                </HStack>
+              )}
+              {name && name === "RockPaperScissors" && (
+                <HStack spacing={5} my="5">
                   <IconButton
                     as={motion.button}
                     animation={
-                      clickAttackHead || clickAttackBody || clickAttackLegs
+                      clickRock || clickPaper || clickScissors
                         ? "none"
                         : animation
                     }
-                    aria-label="Attack Head"
-                    icon={
-                      clickAttackHead ? (
-                        <GiHeadshot color="red" />
-                      ) : (
-                        <GiHeadshot />
-                      )
-                    }
-                    fontSize="5xl"
-                    p="7"
+                    aria-label="Rock"
+                    icon={clickRock ? <Spinner size="xl" /> : <FaHandRock />}
+                    fontSize="6xl"
+                    p="10"
                     onClick={() => {
-                      setClickAttackHead("211");
-                      setClickAttackBody("");
-                      setClickAttackLegs("");
-                      handleRequestMove(
-                        "211" +
-                          (clickDefenseHead ||
-                            clickDefenseBody ||
-                            clickDefenseLegs)
-                      );
+                      setClickRock(true);
+                      handleRequestMove("1");
                     }}
                   />
                   <IconButton
                     as={motion.button}
                     animation={
-                      clickAttackHead || clickAttackBody || clickAttackLegs
+                      clickRock || clickPaper || clickScissors
                         ? "none"
                         : animation
                     }
-                    aria-label="Attack Body"
-                    icon={
-                      clickAttackBody ? (
-                        <GiMuscularTorso color="red" />
-                      ) : (
-                        <GiMuscularTorso />
-                      )
-                    }
-                    fontSize="5xl"
-                    p="7"
+                    aria-label="Paper"
+                    icon={clickPaper ? <Spinner size="xl" /> : <FaHandPaper />}
+                    fontSize="6xl"
+                    p="10"
                     onClick={() => {
-                      setClickAttackHead("");
-                      setClickAttackBody("121");
-                      setClickAttackLegs("");
-                      handleRequestMove(
-                        "121" +
-                          (clickDefenseHead ||
-                            clickDefenseBody ||
-                            clickDefenseLegs)
-                      );
+                      setClickPaper(true);
+                      handleRequestMove("2");
                     }}
                   />
                   <IconButton
                     as={motion.button}
                     animation={
-                      clickAttackHead || clickAttackBody || clickAttackLegs
+                      clickRock || clickPaper || clickScissors
                         ? "none"
                         : animation
                     }
-                    aria-label="Attack Legs"
+                    aria-label="Scissors"
                     icon={
-                      clickAttackLegs ? (
-                        <GiHieroglyphLegs color="red" />
-                      ) : (
-                        <GiHieroglyphLegs />
-                      )
+                      clickScissors ? <Spinner size="xl" /> : <FaHandScissors />
                     }
-                    fontSize="5xl"
-                    p="7"
+                    fontSize="6xl"
+                    p="10"
                     onClick={() => {
-                      setClickAttackHead("");
-                      setClickAttackBody("");
-                      setClickAttackLegs("112");
-                      handleRequestMove(
-                        "112" +
-                          (clickDefenseHead ||
-                            clickDefenseBody ||
-                            clickDefenseLegs)
-                      );
+                      setClickScissors(true);
+                      handleRequestMove("3");
                     }}
                   />
-                </VStack>
-                <VStack spacing={5}>
-                  <Box>Defense:</Box>
-                  <IconButton
-                    as={motion.button}
-                    animation={
-                      clickDefenseHead || clickDefenseBody || clickDefenseLegs
-                        ? "none"
-                        : animation
-                    }
-                    aria-label="Defense Head"
-                    icon={
-                      clickDefenseHead ? (
-                        <GiClosedBarbute color="cyan" />
-                      ) : (
-                        <GiClosedBarbute />
-                      )
-                    }
-                    fontSize="5xl"
-                    p="7"
-                    onClick={() => {
-                      setClickDefenseHead("211");
-                      setClickDefenseBody("");
-                      setClickDefenseLegs("");
-                      handleRequestMove(
-                        (clickAttackHead ||
-                          clickAttackBody ||
-                          clickAttackLegs) + "211"
-                      );
-                    }}
-                  />
-                  <IconButton
-                    as={motion.button}
-                    animation={
-                      clickDefenseHead || clickDefenseBody || clickDefenseLegs
-                        ? "none"
-                        : animation
-                    }
-                    aria-label="Defense Body"
-                    icon={
-                      clickDefenseBody ? (
-                        <GiAbdominalArmor color="cyan" />
-                      ) : (
-                        <GiAbdominalArmor />
-                      )
-                    }
-                    fontSize="5xl"
-                    p="7"
-                    onClick={() => {
-                      setClickDefenseHead("");
-                      setClickDefenseBody("121");
-                      setClickDefenseLegs("");
-                      handleRequestMove(
-                        (clickAttackHead ||
-                          clickAttackBody ||
-                          clickAttackLegs) + "121"
-                      );
-                    }}
-                  />
-                  <IconButton
-                    as={motion.button}
-                    animation={
-                      clickDefenseHead || clickDefenseBody || clickDefenseLegs
-                        ? "none"
-                        : animation
-                    }
-                    aria-label="Defense Legs"
-                    icon={
-                      clickDefenseLegs ? (
-                        <GiArmoredPants color="cyan" />
-                      ) : (
-                        <GiArmoredPants />
-                      )
-                    }
-                    fontSize="5xl"
-                    p="7"
-                    onClick={() => {
-                      setClickDefenseHead("");
-                      setClickDefenseBody("");
-                      setClickDefenseLegs("112");
-                      handleRequestMove(
-                        (clickAttackHead ||
-                          clickAttackBody ||
-                          clickAttackLegs) + "112"
-                      );
-                    }}
-                  />
-                </VStack>
-              </HStack>
-            )}
-          </VStack>
+                </HStack>
+              )}
+              {name && name === "AttackAndDefense" && (
+                <HStack spacing={5} my="5">
+                  <VStack spacing={5}>
+                    <Box>Attack:</Box>
+                    <IconButton
+                      as={motion.button}
+                      animation={
+                        clickAttackHead || clickAttackBody || clickAttackLegs
+                          ? "none"
+                          : animation
+                      }
+                      aria-label="Attack Head"
+                      icon={
+                        clickAttackHead ? (
+                          <GiHeadshot color="red" />
+                        ) : (
+                          <GiHeadshot />
+                        )
+                      }
+                      fontSize="5xl"
+                      p="7"
+                      onClick={() => {
+                        setClickAttackHead("211");
+                        setClickAttackBody("");
+                        setClickAttackLegs("");
+                        handleRequestMove(
+                          "211" +
+                            (clickDefenseHead ||
+                              clickDefenseBody ||
+                              clickDefenseLegs)
+                        );
+                      }}
+                    />
+                    <IconButton
+                      as={motion.button}
+                      animation={
+                        clickAttackHead || clickAttackBody || clickAttackLegs
+                          ? "none"
+                          : animation
+                      }
+                      aria-label="Attack Body"
+                      icon={
+                        clickAttackBody ? (
+                          <GiMuscularTorso color="red" />
+                        ) : (
+                          <GiMuscularTorso />
+                        )
+                      }
+                      fontSize="5xl"
+                      p="7"
+                      onClick={() => {
+                        setClickAttackHead("");
+                        setClickAttackBody("121");
+                        setClickAttackLegs("");
+                        handleRequestMove(
+                          "121" +
+                            (clickDefenseHead ||
+                              clickDefenseBody ||
+                              clickDefenseLegs)
+                        );
+                      }}
+                    />
+                    <IconButton
+                      as={motion.button}
+                      animation={
+                        clickAttackHead || clickAttackBody || clickAttackLegs
+                          ? "none"
+                          : animation
+                      }
+                      aria-label="Attack Legs"
+                      icon={
+                        clickAttackLegs ? (
+                          <GiHieroglyphLegs color="red" />
+                        ) : (
+                          <GiHieroglyphLegs />
+                        )
+                      }
+                      fontSize="5xl"
+                      p="7"
+                      onClick={() => {
+                        setClickAttackHead("");
+                        setClickAttackBody("");
+                        setClickAttackLegs("112");
+                        handleRequestMove(
+                          "112" +
+                            (clickDefenseHead ||
+                              clickDefenseBody ||
+                              clickDefenseLegs)
+                        );
+                      }}
+                    />
+                  </VStack>
+                  <VStack spacing={5}>
+                    <Box>Defense:</Box>
+                    <IconButton
+                      as={motion.button}
+                      animation={
+                        clickDefenseHead || clickDefenseBody || clickDefenseLegs
+                          ? "none"
+                          : animation
+                      }
+                      aria-label="Defense Head"
+                      icon={
+                        clickDefenseHead ? (
+                          <GiClosedBarbute color="cyan" />
+                        ) : (
+                          <GiClosedBarbute />
+                        )
+                      }
+                      fontSize="5xl"
+                      p="7"
+                      onClick={() => {
+                        setClickDefenseHead("211");
+                        setClickDefenseBody("");
+                        setClickDefenseLegs("");
+                        handleRequestMove(
+                          (clickAttackHead ||
+                            clickAttackBody ||
+                            clickAttackLegs) + "211"
+                        );
+                      }}
+                    />
+                    <IconButton
+                      as={motion.button}
+                      animation={
+                        clickDefenseHead || clickDefenseBody || clickDefenseLegs
+                          ? "none"
+                          : animation
+                      }
+                      aria-label="Defense Body"
+                      icon={
+                        clickDefenseBody ? (
+                          <GiAbdominalArmor color="cyan" />
+                        ) : (
+                          <GiAbdominalArmor />
+                        )
+                      }
+                      fontSize="5xl"
+                      p="7"
+                      onClick={() => {
+                        setClickDefenseHead("");
+                        setClickDefenseBody("121");
+                        setClickDefenseLegs("");
+                        handleRequestMove(
+                          (clickAttackHead ||
+                            clickAttackBody ||
+                            clickAttackLegs) + "121"
+                        );
+                      }}
+                    />
+                    <IconButton
+                      as={motion.button}
+                      animation={
+                        clickDefenseHead || clickDefenseBody || clickDefenseLegs
+                          ? "none"
+                          : animation
+                      }
+                      aria-label="Defense Legs"
+                      icon={
+                        clickDefenseLegs ? (
+                          <GiArmoredPants color="cyan" />
+                        ) : (
+                          <GiArmoredPants />
+                        )
+                      }
+                      fontSize="5xl"
+                      p="7"
+                      onClick={() => {
+                        setClickDefenseHead("");
+                        setClickDefenseBody("");
+                        setClickDefenseLegs("112");
+                        handleRequestMove(
+                          (clickAttackHead ||
+                            clickAttackBody ||
+                            clickAttackLegs) + "112"
+                        );
+                      }}
+                    />
+                  </VStack>
+                </HStack>
+              )}
+            </VStack>
+          ) : (
+            <Box textAlign="center" mt="10">
+              <Spinner />
+              <Text>Loading...</Text>
+            </Box>
+          )}
         </Box>
       )}
     </VStack>

@@ -239,23 +239,29 @@ const CardFull = ({ game }: { game: IGame }) => {
       )}
       {name && name.toLowerCase() === "AttackAndDefense".toLowerCase() && (
         <VStack width="full" spacing={0}>
-          <HStack width="full">
-            <Box>Move 1:</Box>
-            <Move move={move1 || game.move1}></Move>
-            <Spacer></Spacer>
-          </HStack>
-          <HStack width="full">
-            <Box>Move 2:</Box>
-            <Move move={game.move2} player={true}></Move>
-            <Spacer></Spacer>
-          </HStack>
+          {(move1 || game.move1) !== "0" && (
+            <HStack width="full">
+              <Box>Move 1:</Box>
+              <Move move={move1 || game.move1}></Move>
+              <Spacer></Spacer>
+            </HStack>
+          )}
+          {game.move2 !== "0" && (move1 || game.move1) !== "0" && (
+            <HStack width="full">
+              <Box>Move 2:</Box>
+              <Move move={game.move2} player={true}></Move>
+              <Spacer></Spacer>
+            </HStack>
+          )}
         </VStack>
       )}
-      <HStack width="full" title={game.random}>
-        <Box>Random:</Box>
-        <Box>{game.random.slice(0, 4) + ".." + game.random.slice(-3)}</Box>
-        <Spacer></Spacer>
-      </HStack>
+      {game.move2 !== "0" && (move1 || game.move1) !== "0" && (
+        <HStack width="full" title={game.random}>
+          <Box>Random:</Box>
+          <Box>{game.random.slice(0, 4) + ".." + game.random.slice(-3)}</Box>
+          <Spacer></Spacer>
+        </HStack>
+      )}
     </VStack>
   );
 };
@@ -281,7 +287,7 @@ const Game = ({ game, status }: { game: IGame; status?: string }) => {
             )}
             <CardPlayer game={game} player={game.player1} id={1}></CardPlayer>
             <CardPlayer game={game} player={game.player2} id={2}></CardPlayer>
-            {status && <CardFull game={game}></CardFull>}
+            {typeof status === "string" && <CardFull game={game}></CardFull>}
           </Box>
         </Link>
       )}

@@ -406,6 +406,7 @@ const Move1 = () => {
               <AlertDescription>
                 <Text>- Choose heads or tails</Text>
                 <Text>- Wait for the second player move</Text>
+                <Text>= If there is a tie, the winner is randomly</Text>
                 <Text>- If you win, confirm your move (within 5 min)</Text>
               </AlertDescription>
             )}
@@ -425,6 +426,7 @@ const Move1 = () => {
               <AlertDescription>
                 <Text>- Choose rock or paper or scissors</Text>
                 <Text>- Wait for the second player move</Text>
+                <Text>= If there is a tie, the winner is randomly</Text>
                 <Text>- If you win, confirm your move (within 5 min)</Text>
               </AlertDescription>
             )}
@@ -444,6 +446,7 @@ const Move1 = () => {
               <AlertDescription>
                 <Text>- Choose attack and defense</Text>
                 <Text>- Wait for the second player move</Text>
+                <Text>= If there is a tie, the winner is randomly</Text>
                 <Text>- If you win, confirm your move (within 5 min)</Text>
               </AlertDescription>
             )}
