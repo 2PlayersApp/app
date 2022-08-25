@@ -5,7 +5,7 @@ const Index = () => {
   return (
     <VStack minW="full" minH="full" position="absolute">
       <Spacer />
-      <Heading>2Players.App</Heading>
+      <Heading size="4xl">2Players.App</Heading>
       <Text>WEB3 Platform For Build Decentralized Games</Text>
       <Link to="HeadsOrTails/1MATIC">
         <Button m="10" p="5">

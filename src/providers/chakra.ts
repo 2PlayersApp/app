@@ -5,8 +5,8 @@ export default extendTheme({
   useSystemColorMode: false,
   initialColorMode: "dark",
   fonts: {
-    heading: `'Major Mono Display', sans-serif`,
-    body: `'Major Mono Display', sans-serif`,
+    heading: `'Bungee', sans-serif`,
+    body: `'Bungee', sans-serif`,
   },
   styles: {
     global: {
