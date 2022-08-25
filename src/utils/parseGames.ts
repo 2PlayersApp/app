@@ -1,12 +1,14 @@
+import { ethers } from "ethers";
 import parseGame from "./parseGame";
 
-export default (rawGames: any[]) => {
-  const result: any[] = [];
+import { IGame, IGameRaw } from "../interfaces/IGame";
 
-  if (rawGames && rawGames[0] && rawGames[0].value && rawGames[0].value[0]) {
-    rawGames.forEach((g: any) => {
-      if (g.value[0][2] === "0x0000000000000000000000000000000000000000")
-        return;
+export default (gamesRaw: IGameRaw[]) => {
+  const result: IGame[] = [];
+
+  if (gamesRaw && gamesRaw[0] && gamesRaw[0].value && gamesRaw[0].value[0]) {
+    gamesRaw.forEach((g) => {
+      if (g.value[0][2] === ethers.constants.AddressZero) return;
       result.push(parseGame([g]));
     });
   }

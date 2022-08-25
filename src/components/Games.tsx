@@ -1,3 +1,4 @@
+import { HStack } from "@chakra-ui/react";
 import Game from "./Game";
 
 const Games = ({ games }: { games: any }) => {
