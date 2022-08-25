@@ -5,7 +5,7 @@ import Connect from "./Connect";
 const Header = () => {
   return (
     <HStack minW="full">
-      <Box>
+      <Box ml="5">
         <Heading size="md" color="white">
           <Link to="/">2Players.App</Link>
           <Text as="small" fontSize="xs">
