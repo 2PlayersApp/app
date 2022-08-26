@@ -10,6 +10,7 @@ import {
   GiHeadshot,
   GiHieroglyphLegs,
   GiMuscularTorso,
+  GiShorts,
 } from "react-icons/gi";
 import { RiCoinFill, RiCoinLine } from "react-icons/ri";
 import { Link, useParams } from "react-router-dom";
@@ -129,7 +130,7 @@ const Move = ({ move, player }: { move: string; player?: boolean }) => {
     />
   );
   moveJsx.push(
-    <GiHieroglyphLegs
+    <GiShorts
       fontSize={22}
       color={move !== "0" && move[2] === "2" ? "red" : "gray"}
     />
