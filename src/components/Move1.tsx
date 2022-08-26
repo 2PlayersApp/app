@@ -23,6 +23,7 @@ import {
   GiMuscularTorso,
   GiArmoredPants,
   GiClosedBarbute,
+  GiShorts,
 } from "react-icons/gi";
 import words from "../utils/words.json";
 import { write } from "../queries";
@@ -279,13 +280,7 @@ const Move1 = () => {
                   : animation
               }
               aria-label="Attack Legs"
-              icon={
-                clickAttackLegs ? (
-                  <GiHieroglyphLegs color="red" />
-                ) : (
-                  <GiHieroglyphLegs />
-                )
-              }
+              icon={clickAttackLegs ? <GiShorts color="red" /> : <GiShorts />}
               fontSize="5xl"
               p="7"
               onClick={() => {

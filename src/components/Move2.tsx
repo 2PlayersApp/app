@@ -1,7 +1,4 @@
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Box,
   Button,
   HStack,
@@ -29,10 +26,10 @@ import { FaHandPaper, FaHandRock, FaHandScissors } from "react-icons/fa";
 import {
   GiArmoredPants,
   GiAbdominalArmor,
-  GiClosedBarbute,
   GiHeadshot,
   GiHieroglyphLegs,
   GiMuscularTorso,
+  GiShorts,
 } from "react-icons/gi";
 
 const animationKeyframes = keyframes`
@@ -98,40 +95,36 @@ const Move2 = () => {
   const winnerItem: { winner: string; sec: string } = parseWinner(winnerRaw);
 
   useEffect(() => {
-    if (!account || account === ethers.constants.AddressZero) return;
+    if (!account || account === ethers.constants.AddressZero || !gameItem)
+      return;
 
-    if (gameItem && gameItem.winner !== ethers.constants.AddressZero) {
-      if (gameItem.winner === account) {
-        setStatus("You Winner");
-      }
-    }
-    if (gameItem.player1 === account) {
+    if (
+      gameItem.winner !== ethers.constants.AddressZero &&
+      gameItem.winner === account
+    ) {
+      setStatus("You Winner");
+    } else if (gameItem.player1 === account) {
       if (gameItem.winner !== ethers.constants.AddressZero) {
         if (gameItem.winner === account) {
-          setStatus("Yeah! Play againe.");
+          setStatus("Yeah! You Win!");
         } else if (gameItem.winner === gameItem.player2) {
-          setStatus("Hmmm! Game Over.");
+          setStatus("D'oh! Game Over!");
         }
       } else {
         if (gameItem.player2 === ethers.constants.AddressZero) {
           setStatus("Wait 2 player");
         } else {
-          if (gameItem.time2 === "0") {
+          if (gameItem.random === "0") {
             setStatus("Wait Random");
           } else {
-            setStatus("Wait Result");
-            if (winnerItem.sec === "0") {
-              if (winnerItem.winner === account) {
-                setStatus("Time Over");
+            if (winnerItem.winner === account) {
+              if (winnerItem.sec === "0") {
+                setStatus("Claim And Confirm!");
               } else {
-                setStatus("You lost");
+                setStatus("Claim And Confirm [ " + winnerItem.sec + " sec ]");
               }
             } else {
-              if (winnerItem.winner === account) {
-                setStatus("Claim And Confirm [ " + winnerItem.sec + " sec ]");
-              } else {
-                setStatus("You lost");
-              }
+              setStatus("D'oh! Game Over!");
             }
           }
         }
@@ -139,15 +132,14 @@ const Move2 = () => {
     } else if (gameItem.player2 === account) {
       if (gameItem.winner !== ethers.constants.AddressZero) {
         if (gameItem.winner === account) {
-          setStatus("Yeah! Play againe.");
+          setStatus("Yeah! You Win!");
         } else if (gameItem.winner === gameItem.player1) {
-          setStatus("Hmmm! Game Over.");
+          setStatus("D'oh! Game Over!");
         }
       } else {
-        if (gameItem.time2 === "0") {
+        if (gameItem.random === "0") {
           setStatus("Wait Random");
         } else {
-          setStatus("Wait Result");
           if (winnerItem.winner === account) {
             setStatus("Player 1 Not Confirmed");
           } else if (winnerItem.sec !== "0") {
@@ -170,7 +162,6 @@ const Move2 = () => {
       const res: any = await _move2(parseChain.name(name), id, move, {
         value: parseChain.value(room),
       });
-      console.log("handleRequestMove", res);
 
       setClickHeads(false);
       setClickTails(false);
@@ -233,7 +224,7 @@ const Move2 = () => {
       {gameItem &&
         gameItem.player1 &&
         gameItem.player1 !== ethers.constants.AddressZero && (
-          <Box mt="5">
+          <Box mt="5" w="100%">
             <Game game={gameItem} status={status}></Game>
           </Box>
         )}
@@ -471,9 +462,9 @@ const Move2 = () => {
                         aria-label="Defense Head"
                         icon={
                           clickDefenseHead ? (
-                            <GiClosedBarbute color="cyan" />
+                            <GiShorts color="cyan" />
                           ) : (
-                            <GiClosedBarbute />
+                            <GiShorts />
                           )
                         }
                         fontSize="5xl"

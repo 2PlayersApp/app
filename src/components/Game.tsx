@@ -18,7 +18,7 @@ import { IGame } from "../interfaces/IGame";
 const CardTime = ({ game }: { game: IGame }) => {
   const time = game.time2 && game.time2 !== "0" ? game.time2 : game.time1;
   return (
-    <Box noOfLines={1}>
+    <Box noOfLines={1} color="gray">
       {time && new Date(parseInt(time) * 1000).toLocaleString()}
     </Box>
   );
@@ -46,7 +46,14 @@ const CardHead = ({ game, status }: { game: IGame; status?: string }) => {
         } else if (game.player2 === account) {
           setTitle(<Text color="red.500">{`YOU LOSE ${room}`}</Text>);
         } else {
-          setTitle(<Text>{`PLAYER 1 WIN ${room}`}</Text>);
+          setTitle(
+            <Text>
+              PLAYER 1 WIN{" "}
+              <Box as="small" color="green.200">
+                {room}
+              </Box>
+            </Text>
+          );
         }
       } else {
         if (game.player2 === account) {
@@ -54,7 +61,14 @@ const CardHead = ({ game, status }: { game: IGame; status?: string }) => {
         } else if (game.player1 === account) {
           setTitle(<Text color="red.500">{`YOU LOSE ${room}`}</Text>);
         } else {
-          setTitle(<Text>{`PLAYER 2 WIN ${room}`}</Text>);
+          setTitle(
+            <Text>
+              PLAYER 2 WIN{" "}
+              <Box as="small" color="green.200">
+                {room}
+              </Box>
+            </Text>
+          );
         }
       }
     }
@@ -276,7 +290,7 @@ const Game = ({ game, status }: { game: IGame; status?: string }) => {
             borderRadius="lg"
             borderStyle="dotted"
             textAlign="center"
-            p="5"
+            p="10"
           >
             <CardTime game={game}></CardTime>
             <CardHead game={game} status={status}></CardHead>
