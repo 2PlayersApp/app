@@ -29,7 +29,7 @@ import {
   GiHeadshot,
   GiHieroglyphLegs,
   GiMuscularTorso,
-  GiShorts,
+  GiClosedBarbute,
 } from "react-icons/gi";
 
 const animationKeyframes = keyframes`
@@ -94,6 +94,9 @@ const Move2 = () => {
   const winnerRaw = useCalls(queryWin) ?? [];
   const winnerItem: { winner: string; sec: string } = parseWinner(winnerRaw);
 
+  console.log("player", player);
+  console.log("winnerRaw", winnerRaw);
+
   useEffect(() => {
     if (!account || account === ethers.constants.AddressZero || !gameItem)
       return;
@@ -113,19 +116,17 @@ const Move2 = () => {
       } else {
         if (gameItem.player2 === ethers.constants.AddressZero) {
           setStatus("Wait 2 player");
+        } else if (gameItem.random === "0") {
+          setStatus("Wait Random");
         } else {
-          if (gameItem.random === "0") {
-            setStatus("Wait Random");
-          } else {
-            if (winnerItem.winner === account) {
-              if (winnerItem.sec === "0") {
-                setStatus("Claim And Confirm!");
-              } else {
-                setStatus("Claim And Confirm [ " + winnerItem.sec + " sec ]");
-              }
+          if (winnerItem.winner === account) {
+            if (winnerItem.sec === "0") {
+              setStatus("Claim And Confirm!");
             } else {
-              setStatus("D'oh! Game Over!");
+              setStatus("Claim And Confirm [ " + winnerItem.sec + " sec ]");
             }
+          } else {
+            setStatus("D'oh! Game Over!");
           }
         }
       }
@@ -159,6 +160,7 @@ const Move2 = () => {
 
     setLoading(true);
     try {
+      console.log("move", move);
       const res: any = await _move2(parseChain.name(name), id, move, {
         value: parseChain.value(room),
       });
@@ -462,9 +464,9 @@ const Move2 = () => {
                         aria-label="Defense Head"
                         icon={
                           clickDefenseHead ? (
-                            <GiShorts color="cyan" />
+                            <GiClosedBarbute color="cyan" />
                           ) : (
-                            <GiShorts />
+                            <GiClosedBarbute />
                           )
                         }
                         fontSize="5xl"

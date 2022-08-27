@@ -3,8 +3,7 @@ export default (rawWinner: any) => {
     rawWinner &&
     rawWinner[0] &&
     rawWinner[0].value &&
-    rawWinner[0].value[0] &&
-    rawWinner[0].value[1]
+    rawWinner[0].value[0]
   ) {
     return {
       winner: rawWinner[0].value[0],
