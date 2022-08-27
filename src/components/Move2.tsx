@@ -132,8 +132,7 @@ const Move2 = () => {
               setStatus("Claim And Confirm! [ " + winnerItem.sec + " sec ]");
             }
           } else {
-            setStatus("");
-            // setStatus("D'oh! Game Over!");
+            setStatus("D'oh! Game Over!");
           }
         }
       }
