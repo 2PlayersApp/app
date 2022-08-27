@@ -8,7 +8,6 @@ import {
   GiAbdominalArmor,
   GiClosedBarbute,
   GiHeadshot,
-  GiHieroglyphLegs,
   GiMuscularTorso,
   GiShorts,
 } from "react-icons/gi";
@@ -175,6 +174,7 @@ const Move = ({ move, player }: { move: string; player?: boolean }) => {
 const CardFull = ({ game }: { game: IGame }) => {
   const { name, room, id } = useParams();
   const [move1, setMove1] = useState("");
+  const [phrase, setPhrase] = useState("");
 
   useEffect(() => {
     const g: any = localStorage.getItem(
@@ -182,6 +182,7 @@ const CardFull = ({ game }: { game: IGame }) => {
     );
     if (g) {
       setMove1(JSON.parse(g).move);
+      setPhrase(JSON.parse(g).phrase);
     }
   }, [name, room, id]);
 
@@ -215,6 +216,13 @@ const CardFull = ({ game }: { game: IGame }) => {
             </Box>
             <Spacer></Spacer>
           </HStack>
+          {phrase && (
+            <HStack width="full">
+              <Box>Passphrase:</Box>
+              <Box>{phrase}</Box>
+              <Spacer></Spacer>
+            </HStack>
+          )}
         </VStack>
       )}
       {name && name.toLowerCase() === "RockPaperScissors".toLowerCase() && (
@@ -249,6 +257,13 @@ const CardFull = ({ game }: { game: IGame }) => {
             </Box>
             <Spacer></Spacer>
           </HStack>
+          {phrase && (
+            <HStack width="full">
+              <Box>Passphrase:</Box>
+              <Box>{phrase}</Box>
+              <Spacer></Spacer>
+            </HStack>
+          )}
         </VStack>
       )}
       {name && name.toLowerCase() === "AttackAndDefense".toLowerCase() && (
@@ -264,6 +279,13 @@ const CardFull = ({ game }: { game: IGame }) => {
             <HStack width="full">
               <Box>Move 2:</Box>
               <Move move={game.move2} player={true}></Move>
+              <Spacer></Spacer>
+            </HStack>
+          )}
+          {phrase && (
+            <HStack width="full">
+              <Box>Passphrase:</Box>
+              <Box>{phrase}</Box>
               <Spacer></Spacer>
             </HStack>
           )}
