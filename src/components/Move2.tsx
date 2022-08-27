@@ -27,9 +27,9 @@ import {
   GiArmoredPants,
   GiAbdominalArmor,
   GiHeadshot,
-  GiHieroglyphLegs,
   GiMuscularTorso,
   GiClosedBarbute,
+  GiShorts,
 } from "react-icons/gi";
 
 const animationKeyframes = keyframes`
@@ -78,14 +78,20 @@ const Move2 = () => {
   const [status, setStatus] = useState("");
 
   useEffect(() => {
+    const localP = localStorage.getItem(
+      ("game" + name + room + id).toLowerCase()
+    );
+    let localPlayer = p;
+    if (localP) {
+      localPlayer = JSON.parse(localP);
+      setPlayer(localPlayer);
+    }
     if (name && room && id) {
       setQuery(game(name, room, id));
     }
     if (name && room && id) {
-      setQueryWin(winner(name, room, id, player.move, player.proof));
+      setQueryWin(winner(name, room, id, localPlayer.move, localPlayer.proof));
     }
-    const s = localStorage.getItem(("game" + name + room + id).toLowerCase());
-    if (s) setPlayer(JSON.parse(s));
   }, [name, room, id]);
 
   const gameRaw: any = useCalls(query) ?? [];
@@ -93,9 +99,6 @@ const Move2 = () => {
 
   const winnerRaw = useCalls(queryWin) ?? [];
   const winnerItem: { winner: string; sec: string } = parseWinner(winnerRaw);
-
-  console.log("player", player);
-  console.log("winnerRaw", winnerRaw);
 
   useEffect(() => {
     if (!account || account === ethers.constants.AddressZero || !gameItem)
@@ -105,13 +108,16 @@ const Move2 = () => {
       gameItem.winner !== ethers.constants.AddressZero &&
       gameItem.winner === account
     ) {
-      setStatus("You Winner");
+      setStatus("");
+      // setStatus("You Winner");
     } else if (gameItem.player1 === account) {
       if (gameItem.winner !== ethers.constants.AddressZero) {
         if (gameItem.winner === account) {
-          setStatus("Yeah! You Win!");
+          setStatus("");
+          // setStatus("Yeah! You Win!");
         } else if (gameItem.winner === gameItem.player2) {
-          setStatus("D'oh! Game Over!");
+          setStatus("");
+          // setStatus("D'oh! Game Over!");
         }
       } else {
         if (gameItem.player2 === ethers.constants.AddressZero) {
@@ -123,19 +129,22 @@ const Move2 = () => {
             if (winnerItem.sec === "0") {
               setStatus("Claim And Confirm!");
             } else {
-              setStatus("Claim And Confirm [ " + winnerItem.sec + " sec ]");
+              setStatus("Claim And Confirm! [ " + winnerItem.sec + " sec ]");
             }
           } else {
-            setStatus("D'oh! Game Over!");
+            setStatus("");
+            // setStatus("D'oh! Game Over!");
           }
         }
       }
     } else if (gameItem.player2 === account) {
       if (gameItem.winner !== ethers.constants.AddressZero) {
         if (gameItem.winner === account) {
-          setStatus("Yeah! You Win!");
+          setStatus("");
+          // setStatus("Yeah! You Win!");
         } else if (gameItem.winner === gameItem.player1) {
-          setStatus("D'oh! Game Over!");
+          setStatus("");
+          // setStatus("D'oh! Game Over!");
         }
       } else {
         if (gameItem.random === "0") {
@@ -160,7 +169,6 @@ const Move2 = () => {
 
     setLoading(true);
     try {
-      console.log("move", move);
       const res: any = await _move2(parseChain.name(name), id, move, {
         value: parseChain.value(room),
       });
@@ -430,9 +438,9 @@ const Move2 = () => {
                         aria-label="Attack Legs"
                         icon={
                           clickAttackLegs ? (
-                            <GiHieroglyphLegs color="red" />
+                            <GiShorts color="red" />
                           ) : (
-                            <GiHieroglyphLegs />
+                            <GiShorts />
                           )
                         }
                         fontSize="5xl"
