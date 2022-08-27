@@ -61,6 +61,11 @@ const Menu = () => {
             m="5"
           />
         </CustomLink>
+        <CustomLink to="build">
+          <Button aria-label="Build Game" p="10" m="5">
+            Build<br></br>Game
+          </Button>
+        </CustomLink>
       </HStack>
       <HStack spacing={4} align="center">
         <CustomLink to={`${name ?? "HeadsOrTails"}/1MATIC`}>

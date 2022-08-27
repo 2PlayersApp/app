@@ -1,5 +1,6 @@
 import { VStack } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
+import Build from "./Build";
 import Header from "./Header";
 import Menu from "./Menu";
 import Move1 from "./Move1";
@@ -17,6 +18,7 @@ const Play = () => {
               <Route path="move" element={<Move1 />} />
               <Route path=":id" element={<Move2 />} />
             </Route>
+            <Route path="build" element={<Build />} />
           </Route>
         </Routes>
       </VStack>
